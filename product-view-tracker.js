@@ -1,16 +1,27 @@
-import React from "react";
-import { createRoot } from "react-dom/client";
-import { ProductViewTracker } from "../../web/components/ProductViewTracker";
+document.addEventListener("DOMContentLoaded", function () {
+  const productId = window.Shopify?.product?.id;
 
-// Get the product ID from the global Shopify object
-const productId = window.Shopify?.product?.id;
+  if (productId) {
+    console.log(`Tracking view for product ID: ${productId}`);
 
-if (productId) {
-  // Create a root element for the React component
-  const rootElement = document.createElement("div");
-  document.body.appendChild(rootElement);
+    // Create an invisible tracking element to confirm the script ran
+    const trackingElement = document.createElement("div");
+    trackingElement.innerText = `Product ${productId} viewed`;
+    trackingElement.style.display = "none"; // Hide element, just for debugging
+    document.body.appendChild(trackingElement); // Append to body (works on all themes)
 
-  // Create a root and render the ProductViewTracker component
-  const root = createRoot(rootElement);
-  root.render(React.createElement(ProductViewTracker, { productId }));
-}
+    // Send product view data to your backend
+    fetch("https://your-backend-api.com/track-view", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ productId }),
+    })
+      .then(response => response.json())
+      .then(data => console.log("Product view tracked:", data))
+      .catch(error => console.error("Error tracking product view:", error));
+  } else {
+    console.warn("Not on a product page, skipping tracking.");
+  }
+});
