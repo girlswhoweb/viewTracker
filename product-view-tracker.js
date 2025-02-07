@@ -1,6 +1,8 @@
 import { api } from "@gadget-client/product-optimiser";
 
 async function trackProductView(productId) {
+  console.log(`👀 Tracking view for product ID: ${productId}`);
+
   try {
     // 1️⃣ Check if the product already has a view record
     const existingProductView = await api.productViews.findMany({
